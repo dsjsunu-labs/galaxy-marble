@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/game/game"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "navigationBarTitleText": "银河弹珠局",
+    "navigationBarBackgroundColor": "#050711",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#050711",
+    "backgroundTextStyle": "dark",
+    "backgroundColorTop": "#050711",
+    "backgroundColorBottom": "#050711"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

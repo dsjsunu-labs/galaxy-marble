@@ -1,4 +1,4 @@
-﻿# 银河弹珠局 · Galaxy Marble Club
+# 银河弹珠局 · Galaxy Marble Club
 
 一台放进浏览器里的商场弹珠机：投币换珠、随机倍率、下拉弹簧杆控力、12 灯道落袋、出弹珠，再攒能量吐星卡。纯 Canvas + CSS，无外部图片、字体或依赖。
 
@@ -41,13 +41,24 @@
 
 代币、弹珠、星卡图鉴、发射统计和音效设置保存在浏览器 `localStorage`，关掉页面再打开会继续。清空浏览器数据会重置到初始状态。
 
+## 微信小程序版
+
+仓库里的 `miniprogram/` 是同一玩法的小程序移植，按手机竖屏重做了机台：
+
+1. 微信开发者工具 → 导入项目 → 选择 `galaxy-marble/miniprogram`
+2. AppID 默认是 `touristappid`（游客模式），正式发布换成自己的
+3. 编译即可预览
+
+详见 [miniprogram/README.md](miniprogram/README.md)。
+
 ## 项目结构
 
 ```text
 galaxy-marble/
-├─ index.html     页面结构
-├─ styles.css     街机外观与响应式布局
-├─ game.js        弹珠物理 / 倍率 / 奖励 / 卡册 / 音效
+├─ index.html     网页版：页面结构
+├─ styles.css     网页版：街机外观与响应式布局
+├─ game.js        网页版：弹珠物理 / 倍率 / 奖励 / 卡册 / 音效
+├─ miniprogram/   微信小程序版（原生 WXML + Canvas 2D）
 ├─ preview.png    预览截图
 ├─ start.bat      Windows 双击启动
 └─ README.md

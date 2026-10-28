@@ -1,0 +1,228 @@
+<view class="page mood-{{moodKey}}">
+  <view class="ambient" aria-hidden="true">
+    <view class="aurora aurora-a"></view>
+    <view class="aurora aurora-b"></view>
+    <view class="beam"></view>
+    <view class="floor-grid"></view>
+  </view>
+
+  <view style="height:{{safeTop}}px;"></view>
+
+  <view class="topbar">
+    <view class="brand">
+      <view class="brand-mark">✦</view>
+      <view class="brand-copy">
+        <text class="brand-cn">银河弹珠局</text>
+        <text class="brand-en">GALAXY MARBLE CLUB</text>
+      </view>
+    </view>
+    <view class="top-actions">
+      <view class="icon-btn" bindtap="onOpenHelp" aria-label="查看玩法">?</view>
+    </view>
+  </view>
+
+  <view class="stage">
+    <view class="cabinet">
+      <view class="topper">
+        <view class="topper-lights left"><view class="bulb"></view><view class="bulb"></view><view class="bulb"></view><view class="bulb"></view></view>
+        <view class="marquee">
+          <text class="marquee-top">INSERT · AIM · JACKPOT</text>
+          <view class="marquee-title"><text class="title-pink">银河</text><text>弹珠</text></view>
+          <text class="marquee-sub">GALAXY MARBLE · CARD DISPENSER</text>
+        </view>
+        <view class="topper-lights right"><view class="bulb"></view><view class="bulb"></view><view class="bulb"></view><view class="bulb"></view></view>
+      </view>
+
+      <view class="cabinet-body">
+        <view class="board-row" style="height:{{boardH}}px;">
+          <view class="glass" style="width:{{boardW}}px;height:{{boardH}}px;">
+            <canvas type="2d" id="gameCanvas"
+                    class="game-canvas {{(showAlbum || showHelp || showCard) ? 'canvas-hidden' : ''}}"
+                    bindtap="onCanvasTap" aria-label="弹珠台"></canvas>
+          </view>
+
+          <view class="spring-bay {{springClass}}" aria-label="弹簧发射杆"
+                bindtouchstart="onSpringStart" catchtouchmove="onSpringMove"
+                bindtouchend="onSpringEnd" bindtouchcancel="onSpringCancel">
+            <view class="jackpot-badge"><text>JACK</text><text class="j-num">20×</text><text>POT</text></view>
+            <text class="pull-caption">PULL ↓</text>
+            <view class="spring-track">
+              <view class="spring-track-line"></view>
+              <view class="spring-housing"><view class="pin"></view></view>
+              <view class="spring-rod"></view>
+              <view class="spring-coil" style="top:{{springCoilTop}}px;height:{{springCoilH}}px;"></view>
+              <view class="spring-knob" style="top:{{springKnobTop}}px;">
+                <view class="knob-collar"></view>
+                <view class="knob-dome"></view>
+                <view class="knob-grip"></view>
+                <view class="knob-glint"></view>
+                <text class="knob-label">PULL</text>
+              </view>
+              <view class="spring-foot"><view class="foot-hole"></view></view>
+            </view>
+            <text class="spring-label">SPRING</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="console">
+        <view class="mult-box {{jackpot ? 'jackpot' : ''}}">
+          <text class="module-label">MULTIPLIER</text>
+          <view class="mult-number"><text>{{multDisplay}}</text><text class="mult-x">×</text></view>
+          <text class="mult-sub">{{multNote}}</text>
+        </view>
+
+        <view class="power-box">
+          <view class="power-head"><text>拉杆力度</text><text>{{powerPct}}%</text></view>
+          <view class="power-track">
+            <view class="power-fill" style="width:{{powerPct}}%;"></view>
+            <view class="power-ticks"><view class="tick"></view><view class="tick"></view><view class="tick"></view><view class="tick"></view><view class="tick"></view><view class="tick"></view><view class="tick"></view><view class="tick"></view></view>
+            <view class="power-knob" style="left:{{powerPct}}%;"></view>
+          </view>
+          <view class="power-zones"><text>右路</text><text>中路</text><text>左路</text></view>
+          <view class="energy-row">
+            <text>出卡能量</text>
+            <view class="energy-track"><view class="energy-fill" style="width:{{cardEnergy}}%;"></view></view>
+            <text>{{cardEnergy}}%</text>
+          </view>
+        </view>
+
+        <view class="launch-wrap">
+          <view class="launch-btn {{launchClass}}" bindtouchstart="onLaunchStart" catchtouchmove="onNoop"
+                bindtouchend="onLaunchEnd" bindtouchcancel="onLaunchCancel">
+            <text class="launch-main">{{launchLabel}}</text>
+            <text class="launch-sub">{{launchSub}}</text>
+          </view>
+          <view class="coin-mech" bindtap="onInsertCoin">
+            <text class="coin-mech-label">COIN</text>
+            <view class="coin-slot"></view>
+            <view class="coin-dot">◉</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="lower-deck">
+        <view class="ball-return">
+          <text class="lower-label">BALL RETURN</text>
+          <view class="tray">
+            <view class="tray-marble" wx:for="{{trayMarbles}}" wx:key="index"></view>
+            <view class="tray-shine"></view>
+          </view>
+          <text class="lower-num">{{marbles}}</text>
+        </view>
+        <view class="plate">GALAXY · GX-12</view>
+        <view class="card-out">
+          <text class="lower-label">CARD OUT</text>
+          <view class="card-mouth"><view class="card-slit"></view></view>
+          <text class="lower-num">{{pulls}}</text>
+        </view>
+      </view>
+
+      <view class="cabinet-base">
+        <view class="base-light"></view>
+        <view class="base-vent"></view>
+        <view class="base-light"></view>
+      </view>
+    </view>
+
+    <view class="dock">
+      <view class="dock-btn gold" bindtap="onInsertCoin"><text>◉</text><text>投币</text></view>
+      <view class="dock-stat"><text>{{marbles}}</text><text>弹珠</text></view>
+      <view class="dock-stat"><text>{{coins}}</text><text>代币</text></view>
+      <view class="dock-btn" bindtap="onOpenAlbum"><text>卡册</text><text class="dock-count">{{uniqueCards}}</text></view>
+    </view>
+
+    <view class="stats-strip">
+      <text>连击 {{streak}}</text>
+      <text>命中 {{stats.hits}} / {{stats.shots}}</text>
+      <text>最高 ×{{stats.best || '—'}}</text>
+    </view>
+
+    <text class="footer-note">本作为怀旧街机玩法演示 · 虚拟道具不可兑换现金</text>
+  </view>
+
+  <!-- card album -->
+  <view class="overlay" wx:if="{{showAlbum}}">
+    <view class="overlay-backdrop" bindtap="onCloseAlbum"></view>
+    <view class="album-panel">
+      <view class="album-head">
+        <view>
+          <text class="sheet-kicker">CARD ARCHIVE · GX-12</text>
+          <text class="album-title">星卡图鉴</text>
+        </view>
+        <view class="album-progress"><text>{{uniqueCards}} / 16</text><text>COLLECTION</text></view>
+        <view class="round-close" bindtap="onCloseAlbum">×</view>
+      </view>
+      <scroll-view class="album-scroll" scroll-y="true" enhanced="{{true}}" show-scrollbar="{{false}}" bounces="{{false}}">
+        <view class="album-grid">
+          <view class="album-slot {{item.owned ? '' : 'locked'}}" wx:for="{{albumCards}}" wx:key="id">
+            <view class="album-card" style="background:{{item.owned ? item.cardBg : 'linear-gradient(155deg,#11182c,#070b17)'}};">
+              <view class="album-card-inner">
+                <view class="album-card-top"><text>NO.{{item.no}} / 016</text><text>{{item.rarity}}</text></view>
+                <view class="album-art">
+                  <view class="orbit orbit-a"></view>
+                  <view class="orbit orbit-b"></view>
+                  <text class="album-glyph" style="color:{{item.owned ? item.c1 : '#3c4662'}};">{{item.owned ? item.glyph : '？'}}</text>
+                </view>
+                <text class="album-name">{{item.owned ? item.name : '？？？'}}</text>
+                <text class="album-en">{{item.owned ? item.en : 'UNKNOWN SIGNAL'}}</text>
+              </view>
+            </view>
+            <text class="slot-name">{{item.owned ? item.name : '未收集'}}</text>
+          </view>
+        </view>
+        <view class="album-foot">重复星卡会自动折算为弹珠。集齐 16 张可触发额外代币奖励。</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- help -->
+  <view class="overlay" wx:if="{{showHelp}}">
+    <view class="overlay-backdrop" bindtap="onCloseHelp"></view>
+    <view class="help-panel">
+      <view class="round-close" bindtap="onCloseHelp">×</view>
+      <text class="sheet-kicker">HOW TO PLAY</text>
+      <text class="help-title">四步，听见钢珠落袋。</text>
+      <view class="help-step"><text class="step-no">01</text><view><text class="step-title">投币换珠</text><text class="step-copy">1 枚代币换 20 颗弹珠。每次发射大钢珠消耗 5 颗。</text></view></view>
+      <view class="help-step"><text class="step-no">02</text><view><text class="step-title">随机倍率</text><text class="step-copy">每局随机锁定 2×–20×，机器点亮对应数量的底部灯道。</text></view></view>
+      <view class="help-step"><text class="step-no">03</text><view><text class="step-title">控力度，选落点</text><text class="step-copy">按住发射键，或向下拉动右侧红色弹簧杆再松手。轻推走右路，拉满冲左路。</text></view></view>
+      <view class="help-step"><text class="step-no">04</text><view><text class="step-title">进灯道，出珠出卡</text><text class="step-copy">落入亮灯轨道赢得「5 × 倍率」颗弹珠。能量满格会吐出星卡。</text></view></view>
+      <view class="help-tags"><text>20× 必出星卡</text><text>未中返 1 珠</text><text>重复卡转珠</text></view>
+      <view class="gold-btn help-btn" bindtap="onCloseHelp">知道了，开打</view>
+      <text class="reset-link" bindtap="onReset">清空本机存档</text>
+    </view>
+  </view>
+
+  <!-- card reveal -->
+  <view class="overlay card-overlay" wx:if="{{showCard}}">
+    <view class="overlay-backdrop" bindtap="onCloseCard"></view>
+    <view class="card-reveal-panel" style="border-color:{{revealColor}};">
+      <view class="reveal-rays" style="background:radial-gradient(circle,{{revealColor}}55 0%,transparent 68%);"></view>
+      <view class="reveal-card-wrap">
+        <view class="reveal-card" style="background:{{revealCardBg}};">
+          <view class="reveal-inner">
+            <view class="reveal-top"><text>NO.{{revealNo}} / 016</text><text>{{revealRarity}}</text></view>
+            <view class="reveal-art">
+              <view class="orbit orbit-a"></view>
+              <view class="orbit orbit-b"></view>
+              <text class="reveal-glyph" style="color:{{revealColor}};">{{revealGlyph}}</text>
+            </view>
+            <text class="reveal-name">{{revealName}}</text>
+            <text class="reveal-en">{{revealEn}}</text>
+            <view class="reveal-bottom"><text>GALAXY MARBLE CLUB</text><text>{{revealStars}}</text></view>
+          </view>
+        </view>
+        <view wx:for="{{confetti}}" wx:key="index" class="confetti" style="left:{{item.left}}%;background:{{item.color}};animation-delay:{{item.delay}}s;animation-duration:{{item.dur}}s;transform:rotate({{item.rotate}}deg);"></view>
+      </view>
+      <view class="reveal-copy">
+        <text class="reveal-kicker" style="color:{{revealColor}};">{{revealKicker}}</text>
+        <text class="reveal-title">{{revealTitle}}</text>
+        <text class="reveal-desc">{{revealDesc}}</text>
+        <view class="gold-btn" bindtap="onCloseCard">{{revealButton}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- simple toast -->
+  <view class="toast {{toastVisible ? 'show' : ''}}">{{toastText}}</view>
+</view>
