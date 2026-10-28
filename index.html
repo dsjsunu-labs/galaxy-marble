@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#080b18">
+  <meta name="description" content="银河弹珠局：投币、拉杆、随机倍率、出弹珠与收藏卡的网页街机。">
+  <title>银河弹珠局 · GALAXY MARBLE CLUB</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='35%25' cy='28%25'%3E%3Cstop stop-color='%23fff'/%3E%3Cstop offset='.35' stop-color='%238ff8ff'/%3E%3Cstop offset='1' stop-color='%233c4fff'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='%23070a16'/%3E%3Ccircle cx='32' cy='33' r='19' fill='url(%23g)'/%3E%3Ccircle cx='25' cy='25' r='5' fill='%23fff' opacity='.85'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient-orb orb-a"></div>
+    <div class="ambient-orb orb-b"></div>
+    <div class="ambient-orb orb-c"></div>
+    <div class="aurora aurora-one"></div>
+    <div class="aurora aurora-two"></div>
+    <div class="ambient-beam"></div>
+    <div class="starfield" id="starfield"></div>
+    <div class="floor-grid"></div>
+    <div class="vignette"></div>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="银河弹珠局">
+      <span class="brand-glyph">✦</span>
+      <span class="brand-copy">
+        <strong>银河弹珠局</strong>
+        <small>GALAXY MARBLE CLUB</small>
+      </span>
+      <span class="brand-edition">EST. 2026</span>
+    </a>
+    <div class="topbar-actions">
+      <div class="top-wallet" aria-label="账户概览">
+        <span><i class="marble-dot"></i><b id="topMarbles">0</b></span>
+        <span><i class="coin-dot">◉</i><b id="topCoins">20</b></span>
+      </div>
+      <button class="icon-button" id="soundBtn" type="button" aria-label="关闭声音" title="声音">
+        <svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5c1.2 1 2 2.1 2 3.5s-.8 2.5-2 3.5M18.7 6c2 1.6 3.3 3.6 3.3 6s-1.3 4.4-3.3 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="m17 9 5 6m0-6-5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-button" id="helpBtn" type="button" aria-label="查看玩法" title="玩法">?</button>
+      <button class="icon-button" id="resetBtn" type="button" aria-label="重置存档" title="重置存档">↺</button>
+    </div>
+  </header>
+
+  <main class="arcade-layout">
+    <aside class="rail rail-left" aria-label="玩家数据">
+      <section class="glass-card wallet-card">
+        <div class="eyebrow"><span>PLAYER VAULT</span><i></i></div>
+        <div class="balance">
+          <strong id="marbleCount">0</strong>
+          <span>颗弹珠</span>
+        </div>
+        <div class="wallet-meta">
+          <span class="coin-pill">◉ <b id="coinCount">20</b> 代币</span>
+          <span><b id="cardCount">0</b> 张星卡</span>
+        </div>
+        <button class="btn btn-coin" id="insertCoinBtn" type="button">
+          <span class="coin-glyph">◉</span>
+          <span>投币换珠</span>
+          <em>+20</em>
+        </button>
+        <p class="fine-print">1 代币 = 20 颗 · 每局投 5 颗</p>
+      </section>
+
+      <section class="glass-card intel-card">
+        <div class="card-heading"><span>本局情报</span><b id="phaseText">待投币</b></div>
+        <div class="intel-hero">
+          <span id="sideMult">×--</span>
+          <small id="sideMultLabel">等待随机倍率</small>
+        </div>
+        <div class="intel-row"><span>亮灯轨道</span><b id="sideLit">-- / 12</b></div>
+        <div class="intel-row"><span>连续命中</span><b id="sideStreak">0</b></div>
+        <div class="energy">
+          <div class="energy-label"><span>出卡能量</span><b id="energyText">0%</b></div>
+          <div class="energy-track"><i id="energyFill"></i><span></span><span></span><span></span><span></span></div>
+        </div>
+        <p class="intel-note" id="intelNote">投币后自动抽取本轮倍率</p>
+      </section>
+
+      <section class="glass-card stats-card">
+        <div class="card-heading"><span>本机战绩</span><b>LOCAL</b></div>
+        <div class="stat-grid">
+          <div><b id="statShots">0</b><span>发射</span></div>
+          <div><b id="statHits">0</b><span>命中</span></div>
+          <div><b id="statRate">—</b><span>命中率</span></div>
+          <div><b id="statBest">—</b><span>最高倍率</span></div>
+        </div>
+      </section>
+
+      <div class="side-note">
+        <span class="pulse-dot"></span>
+        纯虚拟娱乐 · 弹珠与星卡不可兑换现金
+      </div>
+    </aside>
+
+    <section class="machine-column">
+      <div class="cabinet" id="cabinet">
+        <div class="cabinet-atmos" aria-hidden="true"></div>
+        <div class="cabinet-flash" id="cabinetFlash" aria-hidden="true"></div>
+
+        <div class="topper">
+          <div class="topper-wing wing-left" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="marquee">
+            <div class="marquee-top"><span>INSERT</span><i></i><span>AIM</span><i></i><span>JACKPOT</span></div>
+            <h1><span>银河</span>弹珠</h1>
+            <p>GALAXY MARBLE <b>·</b> CARD DISPENSER</p>
+            <div class="marquee-shine" aria-hidden="true"></div>
+          </div>
+          <div class="topper-wing wing-right" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <div class="cabinet-body">
+          <div class="side-strip side-left" aria-hidden="true">
+            <span class="strip-vertical">TILT</span>
+            <div class="speaker">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <span class="strip-vertical dim">NO. 07</span>
+          </div>
+
+          <div class="playfield-shell">
+            <div class="glass-frame" id="glassFrame">
+              <canvas id="gameCanvas" width="600" height="720" aria-label="弹珠台：12 条亮灯轨道，使用下方拉杆控制落点"></canvas>
+              <div class="glass-sheen" aria-hidden="true"></div>
+              <div class="glass-scan" aria-hidden="true"></div>
+
+              <div class="board-ui">
+                <div class="board-topline">
+                  <span><i class="live-dot"></i> 12 LIGHT EYES</span>
+                  <span>BET <b>5</b> MARBLES</span>
+                </div>
+
+                <div class="round-splash" id="roundSplash" aria-live="polite">
+                  <span>本轮倍率</span>
+                  <b id="splashMult">×4</b>
+                  <small id="splashLit">4 轨亮灯</small>
+                </div>
+
+                <div class="result-toast" id="resultToast" aria-live="assertive">
+                  <span id="resultKicker">HIT</span>
+                  <b id="resultMain">×4 命中</b>
+                  <small id="resultSub">赢得 20 颗弹珠</small>
+                </div>
+
+                <div class="charge-hint" id="chargeHint">
+                  <span class="hand-icon">☟</span>
+                  按住按钮 / 下拉弹簧杆蓄力
+                </div>
+
+                <div class="boot-veil" id="bootVeil">
+                  <div class="boot-inner">
+                    <div class="boot-badge"><i></i> COIN OPERATED <i></i></div>
+                    <h2 id="bootTitle">投币开玩</h2>
+                    <p id="bootCopy">投入 1 枚代币，获得 20 颗弹珠</p>
+                    <button class="btn btn-coin btn-boot" id="bootCoinBtn" type="button">
+                      <span class="coin-glyph">◉</span>
+                      <span id="bootBtnText">投币开始</span>
+                      <em>×1</em>
+                    </button>
+                    <small>每局消耗 5 颗 · 虚拟代币纯娱乐</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-strip side-right" aria-label="弹簧发射杆">
+            <div class="jackpot-badge"><span>JACK</span><b>20×</b><span>POT</span></div>
+            <div class="plunger-assembly" id="plungerAssembly" role="button" tabindex="0"
+                 aria-label="向下拉动弹簧杆蓄力，松开发射" title="向下拖动蓄力，松手发射"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="plunger-caption" aria-hidden="true">PULL ↓</span>
+              <div class="plunger-track" aria-hidden="true"></div>
+              <div class="plunger-housing" aria-hidden="true"><i></i></div>
+              <div class="plunger-rod" id="plungerRod" aria-hidden="true"></div>
+              <div class="plunger-spring" id="plungerSpring" aria-hidden="true">
+                <svg viewBox="0 0 32 120" preserveAspectRatio="none" focusable="false">
+                  <path class="coil-ghost" d="M16 1 C2 6,30 11,16 16 C2 21,30 26,16 31 C2 36,30 41,16 46 C2 51,30 56,16 61 C2 66,30 71,16 76 C2 81,30 86,16 91 C2 96,30 101,16 106 C2 111,30 116,16 120"/>
+                  <path class="coil" d="M16 1 C2 6,30 11,16 16 C2 21,30 26,16 31 C2 36,30 41,16 46 C2 51,30 56,16 61 C2 66,30 71,16 76 C2 81,30 86,16 91 C2 96,30 101,16 106 C2 111,30 116,16 120"/>
+                </svg>
+              </div>
+              <div class="plunger-knob" id="plungerKnob" aria-hidden="true">
+                <span class="knob-collar"></span>
+                <span class="knob-dome"></span>
+                <span class="knob-grip"></span>
+                <i class="knob-glint"></i>
+                <b>PULL</b>
+              </div>
+              <div class="plunger-foot" aria-hidden="true"><i></i></div>
+              <div class="plunger-meter" aria-hidden="true"><span></span></div>
+            </div>
+            <span class="strip-vertical dim">SPRING</span>
+          </div>
+        </div>
+
+        <div class="console">
+          <div class="console-glow" aria-hidden="true"></div>
+          <div class="console-main">
+            <div class="mult-module" id="multModule">
+              <span class="module-label">MULTIPLIER</span>
+              <div class="mult-digits"><b id="multValue">--</b><i>×</i></div>
+              <small id="multNote">等待投币</small>
+            </div>
+
+            <div class="power-module">
+              <div class="power-heading"><span>拉杆力度</span><b id="powerPercent">0%</b></div>
+              <div class="power-track" id="powerTrack">
+                <div class="power-ticks" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                <div class="power-fill" id="powerFill"></div>
+                <div class="aim-zone" id="aimZone"></div>
+                <div class="power-knob" id="powerKnob"></div>
+              </div>
+              <div class="power-zones"><span>右路</span><span>中路</span><span>左路</span></div>
+              <small class="power-tip">轻推落右 · 拉满冲左</small>
+            </div>
+
+            <div class="launch-module">
+              <button class="launch-button" id="launchBtn" type="button" aria-label="按住蓄力，松开发射">
+                <span class="launch-glow" aria-hidden="true"></span>
+                <span class="launch-face">
+                  <b id="launchLabel">按住蓄力</b>
+                  <small id="launchSub">HOLD TO CHARGE</small>
+                </span>
+              </button>
+              <div class="coin-mech">
+                <span>COIN</span>
+                <div class="coin-slit" aria-hidden="true"><i></i></div>
+                <button id="coinSlotBtn" type="button" aria-label="投币"><span>◉</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="console-lower">
+            <div class="ball-return">
+              <span class="lower-label">BALL RETURN</span>
+              <div class="tray-window"><div class="tray-marbles" id="marbleTray"></div><i class="tray-shine"></i></div>
+              <b id="trayCount">0</b>
+            </div>
+            <div class="console-plate">
+              <span>GALAXY MARBLE CLUB</span>
+              <i></i>
+              <span>MODEL GX-12</span>
+            </div>
+            <div class="card-out" id="cardDispenser">
+              <div class="card-mouth"><i></i></div>
+              <span class="lower-label">CARD OUT</span>
+              <b id="cardOutCount">0</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="cabinet-base" aria-hidden="true">
+          <span class="base-light left"></span>
+          <span class="base-vent"></span>
+          <span class="base-light right"></span>
+          <div class="cabinet-leg leg-left"></div>
+          <div class="cabinet-leg leg-right"></div>
+        </div>
+      </div>
+
+      <div class="mobile-dock">
+        <button class="dock-btn coin" id="mobileCoinBtn" type="button"><span>◉</span> 投币</button>
+        <div class="dock-stat"><b id="mobileMarbles">0</b><span>弹珠</span></div>
+        <div class="dock-stat"><b id="mobileCoins">20</b><span>代币</span></div>
+        <button class="dock-btn" id="mobileAlbumBtn" type="button">卡册 <b id="mobileCards">0</b></button>
+      </div>
+
+      <p class="control-hint"><kbd>SPACE</kbd> 按住蓄力 · 松开发射　<span>也可下拉右侧弹簧杆，或按住红色按钮</span></p>
+    </section>
+
+    <aside class="rail rail-right" aria-label="卡牌与动态">
+      <section class="glass-card album-card">
+        <div class="card-heading"><span>星卡图鉴</span><b id="albumCount">0 / 16</b></div>
+        <div class="mini-grid" id="miniGrid"></div>
+        <button class="btn btn-ghost" id="openAlbumBtn" type="button">打开完整卡册 <span>↗</span></button>
+      </section>
+
+      <section class="glass-card log-card">
+        <div class="card-heading"><span>最近动态</span><b class="live-label"><i></i> LIVE</b></div>
+        <ul class="event-log" id="eventLog"></ul>
+      </section>
+
+      <div class="quote-card">
+        <span class="quote-mark">“</span>
+        <p>差一点，<br>就是下一颗。</p>
+        <small>— 弹珠局守则 第 12 条</small>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <span>GALAXY MARBLE CLUB · 2026</span>
+    <span>本作为怀旧街机玩法演示，所有代币、弹珠、星卡均为虚拟道具，不含现金交易。</span>
+    <span>NO CASH OUT</span>
+  </footer>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <div class="overlay" id="cardModal" aria-hidden="true">
+    <div class="overlay-backdrop"></div>
+    <div class="card-reveal" id="cardRevealPanel" role="dialog" aria-modal="true" aria-labelledby="revealTitle">
+      <div class="reveal-rays" aria-hidden="true"></div>
+      <div class="reveal-card-mount" id="revealCardMount"></div>
+      <div class="reveal-copy">
+        <span class="reveal-kicker" id="revealKicker">NEW CARD</span>
+        <h2 id="revealTitle">星轨兔</h2>
+        <p id="revealDesc">它把每一次弹跳，都记成一颗星。</p>
+        <button class="btn btn-primary" id="revealCloseBtn" type="button">收下星卡 <span>✦</span></button>
+      </div>
+    </div>
+    <div class="confetti" id="confettiLayer" aria-hidden="true"></div>
+  </div>
+
+  <div class="overlay" id="albumModal" aria-hidden="true">
+    <div class="overlay-backdrop" data-close="albumModal"></div>
+    <div class="album-panel" role="dialog" aria-modal="true" aria-labelledby="albumTitle">
+      <header class="album-head">
+        <div>
+          <span class="sheet-kicker">CARD ARCHIVE · GX-12</span>
+          <h2 id="albumTitle">星卡图鉴</h2>
+        </div>
+        <div class="album-progress">
+          <b id="albumProgressCount">0 / 16</b>
+          <span>COLLECTION</span>
+        </div>
+        <button class="round-close" data-close="albumModal" type="button" aria-label="关闭卡册">×</button>
+      </header>
+      <div class="album-grid" id="albumGrid"></div>
+      <footer class="album-foot">
+        <span>每张星卡都有独立编号。重复卡会自动折算为弹珠。</span>
+        <div class="rarity-legend"><i class="n">N</i><i class="r">R</i><i class="sr">SR</i><i class="ssr">SSR</i></div>
+      </footer>
+    </div>
+  </div>
+
+  <div class="overlay" id="helpModal" aria-hidden="true">
+    <div class="overlay-backdrop" data-close="helpModal"></div>
+    <div class="help-panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <button class="round-close" data-close="helpModal" type="button" aria-label="关闭玩法">×</button>
+      <span class="sheet-kicker">HOW TO PLAY</span>
+      <h2 id="helpTitle">四步，听见钢珠落袋。</h2>
+      <ol class="help-steps">
+        <li><b>01</b><div><strong>投币换珠</strong><p>1 枚代币换 20 颗弹珠。每发射一次大钢珠消耗 5 颗。</p></div></li>
+        <li><b>02</b><div><strong>随机倍率</strong><p>每一局机器会随机锁定 2×–20× 倍率，并点亮对应数量的轨道。</p></div></li>
+        <li><b>03</b><div><strong>控力度，选落点</strong><p>按住发射键，或向下拉动右侧弹簧杆，再松手。轻推走右路，拉满冲左路；底部虚线会提示预测落点区。</p></div></li>
+        <li><b>04</b><div><strong>进灯道，出珠出卡</strong><p>落入亮灯轨道，赢得「5 × 倍率」颗弹珠；命中与出卡能量累积，能量满格会从下方吐出星卡。</p></div></li>
+      </ol>
+      <div class="help-extra">
+        <span>❖ 20× JACKPOT 必出星卡</span>
+        <span>❖ 未中灯道返还 1 颗安慰珠</span>
+        <span>❖ 重复星卡折算弹珠</span>
+      </div>
+      <button class="btn btn-primary" data-close="helpModal" type="button">知道了，开打</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
