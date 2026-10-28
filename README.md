@@ -1,4 +1,4 @@
-# 银河弹珠局 · Galaxy Marble Club
+﻿# 银河弹珠局 · Galaxy Marble Club
 
 一台放进浏览器里的商场弹珠机：投币换珠、随机倍率、下拉弹簧杆控力、12 灯道落袋、出弹珠，再攒能量吐星卡。纯 Canvas + CSS，无外部图片、字体或依赖。
 
@@ -10,7 +10,7 @@
 
 1. 下载本仓库。
 2. 双击 `index.html`（或 `start.bat`）。
-3. 或者打开在线版：<https://dsjsunu.github.io/galaxy-marble/>
+3. 或者打开在线版：<https://dsjsunu-labs.github.io/galaxy-marble/>
 
 不需要安装依赖，也不需要联网。建议用 Chrome / Edge 打开。
 
